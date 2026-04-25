@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My 50kg Journey</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --green: #81b29a;
+            --yellow: #f2cc8f;
+            --red: #e07a5f;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container { width: 100%; max-width: 400px; }
+        h1 { font-weight: 300; font-size: 1.5rem; margin-bottom: 5px; }
+        .subtitle { font-size: 0.8rem; color: #888; margin-bottom: 25px; }
+        
+        /* 數據卡片 */
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.2rem; font-weight: bold; display: block; }
+        .stat-label { font-size: 0.7rem; color: #999; }
+
+        /* 紅黃綠燈紀錄區 */
+        .input-group {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .label-text { font-size: 0.9rem; margin-bottom: 15px; display: block; }
+        .light-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .light {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: 0.3s;
+        }
+        .light.active { opacity: 1; transform: scale(1.1); }
+        .green { background-color: var(--green); }
+        .yellow { background-color: var(--yellow); }
+        .red { background-color: var(--red); }
+
+        /* 輸入框 */
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        button.save-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>June Goal: 50kg</h1>
+    <p class="subtitle">距離 6 月還有約 35 天 · 保持自律</p>
+
+    <div class="stat-card">
+        <div class="stat-item">
+            <span class="stat-value">62.0</span>
+            <span class="stat-label">目前體重</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">--</span>
+            <span class="stat-label">今日體脂</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">12kg</span>
+            <span class="stat-label">剩餘目標</span>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <span class="label-text">今日飲食燈號</span>
+        <div class="light-selector">
+            <button class="light green" onclick="setLight('green')"></button>
+            <button class="light yellow" onclick="setLight('yellow')"></button>
+            <button class="light red" onclick="setLight('red')"></button>
+        </div>
+
+        <span class="label-text">體重與體脂</span>
+        <input type="number" step="0.1" placeholder="今日體重 (kg)">
+        <input type="number" step="0.1" placeholder="今日體脂 (%)">
+        
+        <button class="save-btn" onclick="alert('今日數據已暫存！繼續加油！')">完成今日打卡</button>
+    </div>
+
+    <p style="font-size: 0.7rem; color: #ccc; text-align: center;">記得每天喝哈佛蔬菜湯！</p>
+</div>
+
+<script>
+    function setLight(color) {
+        document.querySelectorAll('.light').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.' + color).classList.add('active');
+    }
+</script>
+
+</body>
+</html>
