@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>June 50kg</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #fdfdfd; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: #444; }
+        h1 { font-weight: 200; letter-spacing: 2px; margin-bottom: 5px; }
+        .goal { color: #888; font-size: 0.8rem; margin-bottom: 30px; }
+        .card { background: white; width: 100%; max-width: 350px; border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .stats { display: flex; justify-content: space-around; text-align: center; }
+        .val { font-size: 1.4rem; font-weight: 500; display: block; }
+        .lab { font-size: 0.7rem; color: #aaa; text-transform: uppercase; }
+        .light-box { display: flex; justify-content: space-between; margin: 20px 0; }
+        .btn { width: 60px; height: 60px; border-radius: 50%; border: none; opacity: 0.2; transition: 0.3s; }
+        .btn.active { opacity: 1; transform: scale(1.1); }
+        .g { background: #81b29a; } .y { background: #f2cc8f; } .r { background: #e07a5f; }
+        input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #eee; border-radius: 12px; box-sizing: border-box; font-size: 1rem; }
+        .save { width: 100%; padding: 15px; background: #333; color: white; border: none; border-radius: 12px; font-size: 1rem; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>June Goal: 50kg</h1>
+    <div class="goal">距離 6 月還有 37 天</div>
+    <div class="card">
+        <div class="stats">
+            <div><span class="val">62.0</span><span class="lab">體重</span></div>
+            <div><span class="val">--</span><span class="lab">體脂</span></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="light-box">
+            <button class="btn g" onclick="sel(this)"></button>
+            <button class="btn y" onclick="sel(this)"></button>
+            <button class="btn r" onclick="sel(this)"></button>
+        </div>
+        <input type="number" step="0.1" placeholder="輸入今日體重 (kg)">
+        <input type="number" step="0.1" placeholder="輸入今日體脂 (%)">
+        <button class="save" onclick="alert('記錄成功！今天也要喝蔬菜湯喔！')">完成打卡</button>
+    </div>
+    <script>function sel(e){document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));e.classList.add('active');}</script>
+</body>
+</html>
