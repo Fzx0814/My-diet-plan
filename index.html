@@ -3,68 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>June 50kg Diary</title>
+    <title>June 50kg Smart Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #fdfdfd; --card: #ffffff; --text: #333; --accent: #2d3436; --ai: #a29bfe; --green: #81b29a; --yellow: #f2cc8f; --red: #e07a5f; }
+        :root { --bg: #fdfdfd; --card: #ffffff; --text: #333; --accent: #2d3436; --ai: #a29bfe; --green: #81b29a; --red: #e07a5f; --star: #f2cc8f; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; color: var(--text); margin: 0; }
-        .card { background: var(--card); width: 100%; max-width: 360px; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 15px; box-sizing: border-box; }
-        .ai-btn { background: var(--ai); color: white; width: 100%; max-width: 360px; padding: 15px; border: none; border-radius: 15px; font-weight: 600; cursor: pointer; margin-bottom: 15px; }
+        .card { background: var(--card); width: 100%; max-width: 380px; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 15px; box-sizing: border-box; }
+        h1 { font-weight: 200; letter-spacing: 2px; font-size: 1.4rem; }
+        
+        /* 體重與評分樣式 */
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #f0f0f0; border-radius: 12px; box-sizing: border-box; font-size: 1rem; outline: none; background: #fafafa; }
-        
-        .light-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .light-tag { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid transparent; background: #f0f0f0; font-size: 0.85rem; font-weight: bold; text-align: center; color: #999; }
-        .light-tag.active.g { border-color: var(--green); background: var(--green); color: white; }
-        .light-tag.active.y { border-color: var(--yellow); background: var(--yellow); color: white; }
-        .light-tag.active.r { border-color: var(--red); background: var(--red); color: white; }
+        .star-rating { display: flex; justify-content: space-around; font-size: 1.5rem; color: #ddd; cursor: pointer; margin: 10px 0; }
+        .star-rating .active { color: var(--star); }
 
-        .save-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; margin-top: 5px; }
-        
-        /* 歷史紀錄樣式 */
-        .history-item { padding: 15px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; line-height: 1.6; position: relative; }
-        .delete-btn { position: absolute; top: 15px; right: 10px; color: #ccc; border: none; background: none; font-size: 1.2rem; cursor: pointer; }
-        .hist-date { font-weight: bold; color: #888; font-size: 0.75rem; }
-        .hist-weight { font-size: 1.2rem; font-weight: bold; color: var(--accent); margin: 5px 0; }
-        .hist-light { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; color: white; margin-left: 5px; }
-        .clear-btn { font-size: 0.7rem; color: #eee; border: none; background: none; margin-top: 20px; }
+        /* 圖表容器 */
+        #chartContainer { height: 200px; width: 100%; margin-top: 10px; }
+
+        /* 標籤樣式 */
+        .light-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        .light-tag { flex: 1; padding: 10px; border-radius: 10px; border: none; background: #eee; font-size: 0.8rem; font-weight: bold; }
+        .light-tag.active.g { background: var(--green); color: white; }
+        .light-tag.active.y { background: #f2cc8f; color: white; }
+        .light-tag.active.r { background: var(--red); color: white; }
+
+        .save-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; }
+        .history-item { padding: 15px; border-bottom: 1px solid #f9f9f9; font-size: 0.8rem; position: relative; }
+        .delete-btn { position: absolute; top: 10px; right: 10px; border: none; background: none; color: #ddd; }
     </style>
 </head>
 <body>
 
-    <h1 style="font-weight: 200; letter-spacing: 2px;">JUNE 50KG</h1>
-    <button class="ai-btn" onclick="askAI()">✨ 詢問 AI 顧問</button>
+    <h1>JUNE 50KG ✈️</h1>
 
     <div class="card">
-        <span style="font-size: 0.75rem; color: #aaa;">今日體重 (kg)</span>
-        <input type="number" id="weight" step="0.1" placeholder="62.0" style="text-align:center; font-size: 2rem; border:none; background:none;">
+        <span style="font-weight: 600; font-size: 0.9rem;">進度趨勢圖 (週/月)</span>
+        <div id="chartContainer"><canvas id="weightChart"></canvas></div>
     </div>
 
     <div class="card">
-        <span style="font-size: 0.85rem; font-weight: 600; color: #666; display: block; margin-bottom: 10px;">飲食紅綠燈</span>
+        <span style="font-size: 0.75rem; color: #aaa;">今日體重 (kg)</span>
+        <input type="number" id="weight" step="0.1" placeholder="62.0" style="text-align:center; font-size: 1.8rem;">
+        
         <div class="light-group">
             <button class="light-tag g" onclick="setLight(this, '綠燈')">綠燈</button>
             <button class="light-tag y" onclick="setLight(this, '黃燈')">黃燈</button>
             <button class="light-tag r" onclick="setLight(this, '紅燈')">紅燈</button>
         </div>
 
-        <span style="font-size: 0.85rem; font-weight: 600; color: #666;">運動內容</span>
-        <input type="text" id="exercise" placeholder="例如：跑步 30min">
+        <span style="font-size: 0.85rem; font-weight: 600;">運動內容</span>
+        <input type="text" id="exercise" placeholder="跑步、瑜伽、或沒運動">
 
-        <span style="font-size: 0.85rem; font-weight: 600; color: #666;">心情筆記</span>
-        <textarea id="note" placeholder="記錄心情..."></textarea>
-        
-        <button class="save-btn" onclick="saveData()">存入歷史紀錄</button>
+        <span style="font-size: 0.85rem; font-weight: 600;">今日心情評分 (1-10)</span>
+        <div class="star-rating" id="starRating">
+            <span onclick="setStars(2)">★</span><span onclick="setStars(4)">★</span><span onclick="setStars(6)">★</span><span onclick="setStars(8)">★</span><span onclick="setStars(10)">★</span>
+        </div>
+
+        <textarea id="note" placeholder="詳細日記..."></textarea>
+        <button class="save-btn" onclick="saveData()">紀錄並查看回饋</button>
     </div>
 
     <div class="card">
-        <span style="font-weight: 600; font-size: 0.9rem;">我的減脂日誌</span>
+        <span style="font-weight: 600; font-size: 0.9rem;">歷史日誌</span>
         <div id="historyList"></div>
-        <button class="clear-btn" onclick="clearData()">清空所有紀錄</button>
     </div>
 
 <script>
     let selectedLight = "";
+    let selectedStars = 0;
+    let myChart;
 
-    window.onload = function() { displayHistory(); };
+    window.onload = function() { displayHistory(); updateChart(); };
 
     function setLight(btn, val) {
         document.querySelectorAll('.light-tag').forEach(b => b.classList.remove('active'));
@@ -72,69 +80,92 @@
         selectedLight = val;
     }
 
-    function askAI() {
-        const advice = ["158cm 的妳，50kg 絕對可以！", "考完試了嗎？辛苦了，喝杯水休息吧！"];
-        alert("✨ AI 顧問：\n" + advice[Math.floor(Math.random() * advice.length)]);
+    function setStars(val) {
+        selectedStars = val;
+        const stars = document.querySelectorAll('.star-rating span');
+        stars.forEach((s, i) => s.classList.toggle('active', i < val/2));
     }
 
     function saveData() {
-        const weight = document.getElementById('weight').value;
-        const exercise = document.getElementById('exercise').value || "無運動";
+        const weight = parseFloat(document.getElementById('weight').value);
+        const exercise = document.getElementById('exercise').value || "無";
         const note = document.getElementById('note').value;
         const date = new Date().toLocaleDateString();
 
-        if(!weight || !selectedLight) { alert('請填寫體重並選擇燈號！'); return; }
+        if(!weight || !selectedLight) { alert('體重跟燈號要填喔！'); return; }
 
-        const newData = { date, weight, light: selectedLight, exercise, note, id: Date.now() };
         let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
+        
+        // 4. AI 鼓勵/監督邏輯
+        if (history.length > 0) {
+            const lastWeight = history[0].weight;
+            if (weight < lastWeight) {
+                alert("🎉 太棒了紫瑄！掉了 " + (lastWeight - weight).toFixed(1) + "kg！繼續保持！");
+            } else if (weight > lastWeight) {
+                alert("😤 欸欸！增加了 " + (weight - lastWeight).toFixed(1) + "kg！今天的紅綠燈是不是選錯了？給我認真點！");
+            } else {
+                alert("穩定發揮，維持住也是一種勝利！");
+            }
+        }
+
+        const newData = { date, weight, light: selectedLight, stars: selectedStars, exercise, note, id: Date.now() };
         history.unshift(newData);
         localStorage.setItem('dietHistory', JSON.stringify(history));
 
-        alert('儲存成功！');
         displayHistory();
+        updateChart();
         resetForm();
     }
 
-    function resetForm() {
-        document.getElementById('weight').value = '';
-        document.getElementById('exercise').value = '';
-        document.getElementById('note').value = '';
-        document.querySelectorAll('.light-tag').forEach(b => b.classList.remove('active'));
-        selectedLight = "";
+    function updateChart() {
+        const history = JSON.parse(localStorage.getItem('dietHistory')) || [];
+        const chartData = [...history].reverse().slice(-7); // 取最近 7 筆
+        const labels = chartData.map(d => d.date);
+        const weights = chartData.map(d => d.weight);
+
+        if (myChart) myChart.destroy();
+        const ctx = document.getElementById('weightChart').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{ label: '體重趨勢', data: weights, borderColor: '#a29bfe', fill: false, tension: 0.3 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
     }
 
     function displayHistory() {
         const history = JSON.parse(localStorage.getItem('dietHistory')) || [];
         const listDiv = document.getElementById('historyList');
-        listDiv.innerHTML = history.length === 0 ? '<p style="color:#ccc; font-size:0.8rem; margin-top:10px;">尚無紀錄</p>' : '';
-        
+        listDiv.innerHTML = "";
         history.forEach((item, index) => {
-            const lightColor = item.light === '綠燈' ? '#81b29a' : (item.light === '黃燈' ? '#f2cc8f' : '#e07a5f');
             const div = document.createElement('div');
             div.className = 'history-item';
             div.innerHTML = `
                 <button class="delete-btn" onclick="deleteItem(${index})">✕</button>
-                <span class="hist-date">${item.date}</span>
-                <span class="hist-light" style="background:${lightColor}">${item.light}</span>
-                <div class="hist-weight">${item.weight} kg</div>
-                <div style="font-size:0.8rem; color:#555;">🏃 運動：${item.exercise}</div>
-                <div style="font-size:0.8rem; color:#666; margin-top:5px;">📝 ${item.note || '無紀錄'}</div>
+                <b>${item.date}</b> | ${item.weight}kg | ${item.light} | ❤️${item.stars}分<br>
+                <small>🏃 ${item.exercise}</small><br>
+                <small>📝 ${item.note}</small>
             `;
             listDiv.appendChild(div);
         });
     }
 
     function deleteItem(index) {
-        if(confirm('確定要刪除這一筆紀錄嗎？')) {
-            let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
-            history.splice(index, 1);
-            localStorage.setItem('dietHistory', JSON.stringify(history));
-            displayHistory();
-        }
+        let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
+        history.splice(index, 1);
+        localStorage.setItem('dietHistory', JSON.stringify(history));
+        displayHistory();
+        updateChart();
     }
 
-    function clearData() { if(confirm('確定要清空所有紀錄嗎？')) { localStorage.removeItem('dietHistory'); displayHistory(); } }
+    function resetForm() {
+        document.getElementById('weight').value = '';
+        document.getElementById('exercise').value = '';
+        document.getElementById('note').value = '';
+        setStars(0);
+    }
 </script>
-
 </body>
 </html>
