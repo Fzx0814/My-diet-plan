@@ -3,93 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>June 50kg Journey</title>
+    <title>June 50kg Pro</title>
     <style>
-        :root {
-            --bg: #fafafa;
-            --card: #ffffff;
-            --text: #444;
-            --green: #81b29a;
-            --yellow: #f2cc8f;
-            --red: #e07a5f;
-            --accent: #3d405b;
-        }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 30px 20px; color: var(--text); margin: 0; }
-        h1 { font-weight: 200; letter-spacing: 3px; margin-bottom: 5px; font-size: 1.5rem; }
-        .goal-tag { background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; margin-bottom: 25px; }
+        :root { --bg: #f8f9fa; --card: #ffffff; --text: #333; --accent: #2d3436; --ai: #a29bfe; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; color: var(--text); margin: 0; }
+        .header { text-align: center; margin-bottom: 20px; }
+        h1 { font-weight: 200; letter-spacing: 2px; margin: 0; font-size: 1.4rem; }
         
-        .card { background: var(--card); width: 100%; max-width: 350px; border-radius: 24px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 20px; box-sizing: border-box; }
-        .stats { text-align: center; padding: 10px 0; }
-        .val { font-size: 2.5rem; font-weight: 300; display: block; color: var(--accent); }
-        .lab { font-size: 0.8rem; color: #aaa; letter-spacing: 1px; }
-
-        .section-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; display: block; color: #666; }
+        .card { background: var(--card); width: 100%; max-width: 360px; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 15px; box-sizing: border-box; }
+        .stats-grid { display: flex; justify-content: space-around; align-items: center; }
         
-        /* 飲食燈號 */
-        .light-box { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .btn { width: 30%; height: 45px; border-radius: 12px; border: none; opacity: 0.15; transition: 0.3s; font-size: 0.8rem; font-weight: bold; }
-        .btn.active { opacity: 1; color: white; transform: translateY(-2px); }
-        .g { background: var(--green); color: var(--green); }
-        .y { background: var(--yellow); color: var(--yellow); }
-        .r { background: var(--red); color: var(--red); }
-
-        /* 蔬菜湯開關 */
-        .soup-toggle { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px dashed #eee; margin-top: 10px; }
-        .soup-btn { background: #eee; border: none; padding: 8px 15px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; transition: 0.3s; }
-        .soup-btn.active { background: var(--green); color: white; }
-
-        /* 輸入框與筆記 */
-        input, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #f0f0f0; border-radius: 12px; box-sizing: border-box; font-size: 1rem; background: #fdfdfd; }
-        textarea { height: 100px; resize: none; font-family: inherit; }
+        /* AI 顧問按鈕 */
+        .ai-btn { background: var(--ai); color: white; width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         
-        .save-btn { width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; margin-top: 10px; transition: 0.3s; }
-        .save-btn:active { transform: scale(0.98); }
+        /* 輸入區 */
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        .btn-group { display: flex; gap: 10px; margin: 10px 0; }
+        .btn-small { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #eee; background: white; font-size: 0.8rem; }
+        .btn-small.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* 歷史資料 */
+        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; }
+        .history-date { color: #999; }
+
+        .save-btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 1rem; margin-top: 10px; }
     </style>
 </head>
 <body>
+
+<div class="header">
     <h1>JUNE 50KG</h1>
-    <div class="goal-tag">目前 62.0kg · 目標 50.0kg</div>
+    <p style="font-size: 0.7rem; color: #aaa;">158cm | Goal 50kg</p>
+</div>
 
-    <div class="card">
-        <div class="stats">
-            <span class="lab">今日體重</span>
-            <input type="number" step="0.1" placeholder="0.0" style="text-align: center; font-size: 2rem; border: none; background: transparent; margin: 0;">
-            <span class="lab">KG</span>
+<div style="width:100%; max-width:360px;">
+    <button class="ai-btn" onclick="askAI()">✨ 詢問 AI 減脂顧問</button>
+</div>
+
+<div class="card">
+    <div class="stats-grid">
+        <div style="text-align:center;">
+            <span style="font-size: 0.7rem; color: #999;">今日體重</span>
+            <input type="number" step="0.1" placeholder="62.0" style="text-align:center; border:none; font-size: 1.5rem; padding:0;">
         </div>
     </div>
+</div>
 
-    <div class="card">
-        <span class="section-title">飲食與心情紀錄</span>
-        <div class="light-box">
-            <button class="btn g" onclick="sel(this, '綠燈')">乾淨</button>
-            <button class="btn y" onclick="sel(this, '黃燈')">一般</button>
-            <button class="btn r" onclick="sel(this, '紅燈')">亂吃</button>
-        </div>
-        
-        <div class="soup-toggle">
-            <span style="font-size: 0.85rem;">🍲 哈佛蔬菜湯成就</span>
-            <button class="soup-btn" onclick="toggleSoup(this)">未達成</button>
-        </div>
-
-        <textarea placeholder="寫下今天的心情或筆記...（例如：今天考完經濟學好累，差點想喝珍奶）"></textarea>
-        
-        <button class="save-btn" onclick="save()">完成今日打卡</button>
+<div class="card">
+    <span style="font-size: 0.8rem; font-weight: 600;">今日狀態</span>
+    <div class="btn-group">
+        <button class="btn-small" onclick="selectTag(this)">乾淨飲食</button>
+        <button class="btn-small" onclick="selectTag(this)">有喝蔬菜湯</button>
+        <button class="btn-small" onclick="selectTag(this)">有運動</button>
     </div>
+    <textarea id="note" placeholder="紀錄心情...（如：今天考會計好累）"></textarea>
+    <button class="save-btn" onclick="saveData()">存入歷史紀錄</button>
+</div>
 
-    <p style="font-size: 0.7rem; color: #ccc;">建立於 2026 · 專屬於妳的減脂計畫</p>
+<div class="card">
+    <span style="font-size: 0.8rem; font-weight: 600;">歷史紀錄 (最近 3 天)</span>
+    <div id="history-list">
+        <div class="history-item"><span class="history-date">04/24</span> <span>61.8kg</span> <span style="color:green;">✔</span></div>
+        <div class="history-item"><span class="history-date">04/23</span> <span>62.1kg</span> <span style="color:red;">✘</span></div>
+        <div class="history-item"><span class="history-date">04/22</span> <span>62.3kg</span> <span style="color:green;">✔</span></div>
+    </div>
+</div>
 
-    <script>
-        function sel(e, label){
-            document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
-            e.classList.add('active');
-        }
-        function toggleSoup(e){
-            e.classList.toggle('active');
-            e.innerText = e.classList.contains('active') ? '已達成 ✨' : '未達成';
-        }
-        function save(){
-            alert('記錄成功！今天的妳辛苦了，繼續往 50kg 邁進！');
-        }
-    </script>
+<script>
+    function selectTag(btn) { btn.classList.toggle('active'); }
+    
+    function askAI() {
+        const thoughts = document.getElementById('note').value;
+        alert("AI 顧問提醒：\n想吃東西前先喝 300cc 溫水！\n既然妳都親手做了這個網站，就別輕易破功喔！");
+        // 這邊可以導向 Gemini 或妳常用的 AI
+    }
+
+    function saveData() {
+        alert("歷史紀錄已更新！(註：目前為模擬儲存，數據重新整理會重置。若需永久儲存可串接 Google Sheets)");
+    }
+</script>
+
 </body>
 </html>
