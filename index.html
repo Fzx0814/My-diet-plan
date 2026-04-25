@@ -11,7 +11,6 @@
         .ai-btn { background: var(--ai); color: white; width: 100%; max-width: 360px; padding: 15px; border: none; border-radius: 15px; font-weight: 600; cursor: pointer; margin-bottom: 15px; }
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #f0f0f0; border-radius: 12px; box-sizing: border-box; font-size: 1rem; outline: none; background: #fafafa; }
         
-        /* 紅綠燈樣式 */
         .light-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .light-tag { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid transparent; background: #f0f0f0; font-size: 0.85rem; font-weight: bold; text-align: center; color: #999; }
         .light-tag.active.g { border-color: var(--green); background: var(--green); color: white; }
@@ -19,7 +18,10 @@
         .light-tag.active.r { border-color: var(--red); background: var(--red); color: white; }
 
         .save-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; margin-top: 5px; }
+        
+        /* 歷史紀錄樣式 */
         .history-item { padding: 15px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; line-height: 1.6; position: relative; }
+        .delete-btn { position: absolute; top: 15px; right: 10px; color: #ccc; border: none; background: none; font-size: 1.2rem; cursor: pointer; }
         .hist-date { font-weight: bold; color: #888; font-size: 0.75rem; }
         .hist-weight { font-size: 1.2rem; font-weight: bold; color: var(--accent); margin: 5px 0; }
         .hist-light { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; color: white; margin-left: 5px; }
@@ -45,10 +47,10 @@
         </div>
 
         <span style="font-size: 0.85rem; font-weight: 600; color: #666;">運動內容</span>
-        <input type="text" id="exercise" placeholder="例如：跑步 30min、瑜伽">
+        <input type="text" id="exercise" placeholder="例如：跑步 30min">
 
         <span style="font-size: 0.85rem; font-weight: 600; color: #666;">心情筆記</span>
-        <textarea id="note" placeholder="今天考完會計的心情..."></textarea>
+        <textarea id="note" placeholder="記錄心情..."></textarea>
         
         <button class="save-btn" onclick="saveData()">存入歷史紀錄</button>
     </div>
@@ -71,7 +73,7 @@
     }
 
     function askAI() {
-        const advice = ["158cm 的妳，50kg 是完全可以達成的目標！加油！", "今天的自律，是明天體重計給妳最好的回饋！", "想吃東西前先喝 300cc 溫水！"];
+        const advice = ["158cm 的妳，50kg 絕對可以！", "考完試了嗎？辛苦了，喝杯水休息吧！"];
         alert("✨ AI 顧問：\n" + advice[Math.floor(Math.random() * advice.length)]);
     }
 
@@ -81,16 +83,19 @@
         const note = document.getElementById('note').value;
         const date = new Date().toLocaleDateString();
 
-        if(!weight || !selectedLight) { alert('請填寫體重並選擇飲食燈號！'); return; }
+        if(!weight || !selectedLight) { alert('請填寫體重並選擇燈號！'); return; }
 
-        const newData = { date, weight, light: selectedLight, exercise, note };
+        const newData = { date, weight, light: selectedLight, exercise, note, id: Date.now() };
         let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
         history.unshift(newData);
         localStorage.setItem('dietHistory', JSON.stringify(history));
 
         alert('儲存成功！');
         displayHistory();
-        // 重設輸入
+        resetForm();
+    }
+
+    function resetForm() {
         document.getElementById('weight').value = '';
         document.getElementById('exercise').value = '';
         document.getElementById('note').value = '';
@@ -103,22 +108,32 @@
         const listDiv = document.getElementById('historyList');
         listDiv.innerHTML = history.length === 0 ? '<p style="color:#ccc; font-size:0.8rem; margin-top:10px;">尚無紀錄</p>' : '';
         
-        history.forEach(item => {
+        history.forEach((item, index) => {
             const lightColor = item.light === '綠燈' ? '#81b29a' : (item.light === '黃燈' ? '#f2cc8f' : '#e07a5f');
             const div = document.createElement('div');
             div.className = 'history-item';
             div.innerHTML = `
+                <button class="delete-btn" onclick="deleteItem(${index})">✕</button>
                 <span class="hist-date">${item.date}</span>
                 <span class="hist-light" style="background:${lightColor}">${item.light}</span>
                 <div class="hist-weight">${item.weight} kg</div>
                 <div style="font-size:0.8rem; color:#555;">🏃 運動：${item.exercise}</div>
-                <div class="hist-note">📝 ${item.note || '無紀錄'}</div>
+                <div style="font-size:0.8rem; color:#666; margin-top:5px;">📝 ${item.note || '無紀錄'}</div>
             `;
             listDiv.appendChild(div);
         });
     }
 
-    function clearData() { if(confirm('確定要清空嗎？')) { localStorage.removeItem('dietHistory'); displayHistory(); } }
+    function deleteItem(index) {
+        if(confirm('確定要刪除這一筆紀錄嗎？')) {
+            let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
+            history.splice(index, 1);
+            localStorage.setItem('dietHistory', JSON.stringify(history));
+            displayHistory();
+        }
+    }
+
+    function clearData() { if(confirm('確定要清空所有紀錄嗎？')) { localStorage.removeItem('dietHistory'); displayHistory(); } }
 </script>
 
 </body>
