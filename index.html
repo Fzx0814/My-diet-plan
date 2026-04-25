@@ -6,43 +6,41 @@
     <title>June 50kg Smart Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #fdfdfd; --card: #ffffff; --text: #333; --accent: #2d3436; --ai: #a29bfe; --green: #81b29a; --red: #e07a5f; --star: #f2cc8f; }
+        :root { --bg: #fdfdfd; --card: #ffffff; --text: #333; --accent: #2d3436; --ai: #a29bfe; --green: #81b29a; --red: #e07a5f; --slider: #a29bfe; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; color: var(--text); margin: 0; }
-        .card { background: var(--card); width: 100%; max-width: 380px; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 15px; box-sizing: border-box; }
-        h1 { font-weight: 200; letter-spacing: 2px; font-size: 1.4rem; }
+        .card { background: var(--card); width: 100%; max-width: 380px; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 15px; box-sizing: border-box; }
+        h1 { font-weight: 200; letter-spacing: 3px; font-size: 1.4rem; margin: 10px 0; }
         
-        /* 體重與評分樣式 */
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #f0f0f0; border-radius: 12px; box-sizing: border-box; font-size: 1rem; outline: none; background: #fafafa; }
-        .star-rating { display: flex; justify-content: space-around; font-size: 1.5rem; color: #ddd; cursor: pointer; margin: 10px 0; }
-        .star-rating .active { color: var(--star); }
+        input[type="number"], textarea, input[type="text"] { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #f0f0f0; border-radius: 12px; box-sizing: border-box; font-size: 1rem; outline: none; background: #fafafa; }
+        
+        /* 1-10分滑動桿樣式 */
+        .score-container { text-align: center; margin: 15px 0; }
+        .score-display { font-size: 2.5rem; font-weight: 200; color: var(--ai); }
+        .slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 5px; background: #eee; outline: none; margin: 20px 0; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--ai); cursor: pointer; border: 4px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* 圖表容器 */
-        #chartContainer { height: 200px; width: 100%; margin-top: 10px; }
-
-        /* 標籤樣式 */
-        .light-group { display: flex; gap: 8px; margin-bottom: 15px; }
-        .light-tag { flex: 1; padding: 10px; border-radius: 10px; border: none; background: #eee; font-size: 0.8rem; font-weight: bold; }
+        .light-group { display: flex; gap: 8px; margin: 15px 0; }
+        .light-tag { flex: 1; padding: 12px; border-radius: 12px; border: none; background: #f0f0f0; font-size: 0.85rem; font-weight: bold; color: #aaa; transition: 0.3s; }
         .light-tag.active.g { background: var(--green); color: white; }
         .light-tag.active.y { background: #f2cc8f; color: white; }
         .light-tag.active.r { background: var(--red); color: white; }
 
-        .save-btn { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; }
-        .history-item { padding: 15px; border-bottom: 1px solid #f9f9f9; font-size: 0.8rem; position: relative; }
-        .delete-btn { position: absolute; top: 10px; right: 10px; border: none; background: none; color: #ddd; }
+        .save-btn { width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 15px; font-size: 1rem; font-weight: 600; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .history-item { padding: 15px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; position: relative; line-height: 1.6; }
+        .delete-btn { position: absolute; top: 15px; right: 10px; border: none; background: none; color: #eee; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
-    <h1>JUNE 50KG ✈️</h1>
+    <h1>JUNE 50KG 🏃‍♀️</h1>
 
     <div class="card">
-        <span style="font-weight: 600; font-size: 0.9rem;">進度趨勢圖 (週/月)</span>
-        <div id="chartContainer"><canvas id="weightChart"></canvas></div>
+        <canvas id="weightChart" style="height:180px;"></canvas>
     </div>
 
     <div class="card">
         <span style="font-size: 0.75rem; color: #aaa;">今日體重 (kg)</span>
-        <input type="number" id="weight" step="0.1" placeholder="62.0" style="text-align:center; font-size: 1.8rem;">
+        <input type="number" id="weight" step="0.1" placeholder="62.0" style="text-align:center; font-size: 2.2rem; border:none; background:none;">
         
         <div class="light-group">
             <button class="light-tag g" onclick="setLight(this, '綠燈')">綠燈</button>
@@ -50,15 +48,15 @@
             <button class="light-tag r" onclick="setLight(this, '紅燈')">紅燈</button>
         </div>
 
-        <span style="font-size: 0.85rem; font-weight: 600;">運動內容</span>
-        <input type="text" id="exercise" placeholder="跑步、瑜伽、或沒運動">
-
-        <span style="font-size: 0.85rem; font-weight: 600;">今日心情評分 (1-10)</span>
-        <div class="star-rating" id="starRating">
-            <span onclick="setStars(2)">★</span><span onclick="setStars(4)">★</span><span onclick="setStars(6)">★</span><span onclick="setStars(8)">★</span><span onclick="setStars(10)">★</span>
+        <span style="font-size: 0.85rem; font-weight: 600; color:#666;">今日心情評分</span>
+        <div class="score-container">
+            <div class="score-display"><span id="currentScore">5</span> <small style="font-size:1rem;">/ 10</small></div>
+            <input type="range" min="1" max="10" value="5" class="slider" id="scoreSlider" oninput="updateScore(this.value)">
         </div>
 
+        <input type="text" id="exercise" placeholder="運動內容 (例：跑步 30min)">
         <textarea id="note" placeholder="詳細日記..."></textarea>
+        
         <button class="save-btn" onclick="saveData()">紀錄並查看回饋</button>
     </div>
 
@@ -69,10 +67,11 @@
 
 <script>
     let selectedLight = "";
-    let selectedStars = 0;
     let myChart;
 
     window.onload = function() { displayHistory(); updateChart(); };
+
+    function updateScore(val) { document.getElementById('currentScore').innerText = val; }
 
     function setLight(btn, val) {
         document.querySelectorAll('.light-tag').forEach(b => b.classList.remove('active'));
@@ -80,35 +79,26 @@
         selectedLight = val;
     }
 
-    function setStars(val) {
-        selectedStars = val;
-        const stars = document.querySelectorAll('.star-rating span');
-        stars.forEach((s, i) => s.classList.toggle('active', i < val/2));
-    }
-
     function saveData() {
         const weight = parseFloat(document.getElementById('weight').value);
-        const exercise = document.getElementById('exercise').value || "無";
+        const score = document.getElementById('scoreSlider').value;
+        const exercise = document.getElementById('exercise').value || "無紀錄";
         const note = document.getElementById('note').value;
         const date = new Date().toLocaleDateString();
 
-        if(!weight || !selectedLight) { alert('體重跟燈號要填喔！'); return; }
+        if(!weight || !selectedLight) { alert('體重跟燈號都要填喔！'); return; }
 
         let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
         
-        // 4. AI 鼓勵/監督邏輯
+        // AI 監督邏輯
         if (history.length > 0) {
-            const lastWeight = history[0].weight;
-            if (weight < lastWeight) {
-                alert("🎉 太棒了紫瑄！掉了 " + (lastWeight - weight).toFixed(1) + "kg！繼續保持！");
-            } else if (weight > lastWeight) {
-                alert("😤 欸欸！增加了 " + (weight - lastWeight).toFixed(1) + "kg！今天的紅綠燈是不是選錯了？給我認真點！");
-            } else {
-                alert("穩定發揮，維持住也是一種勝利！");
-            }
+            const diff = (weight - history[0].weight).toFixed(1);
+            if (diff < 0) alert(`🎉 紫瑄太強了！掉了 ${Math.abs(diff)}kg！離 50kg 又近了！`);
+            else if (diff > 0) alert(`😤 嗶嗶！增加了 ${diff}kg！給我放下手中的宵夜！`);
+            else alert("穩定持平！明天繼續加油！");
         }
 
-        const newData = { date, weight, light: selectedLight, stars: selectedStars, exercise, note, id: Date.now() };
+        const newData = { date, weight, light: selectedLight, score, exercise, note, id: Date.now() };
         history.unshift(newData);
         localStorage.setItem('dietHistory', JSON.stringify(history));
 
@@ -119,7 +109,7 @@
 
     function updateChart() {
         const history = JSON.parse(localStorage.getItem('dietHistory')) || [];
-        const chartData = [...history].reverse().slice(-7); // 取最近 7 筆
+        const chartData = [...history].reverse().slice(-7);
         const labels = chartData.map(d => d.date);
         const weights = chartData.map(d => d.weight);
 
@@ -129,9 +119,9 @@
             type: 'line',
             data: {
                 labels: labels,
-                datasets: [{ label: '體重趨勢', data: weights, borderColor: '#a29bfe', fill: false, tension: 0.3 }]
+                datasets: [{ label: '體重趨勢', data: weights, borderColor: '#a29bfe', backgroundColor: 'rgba(162, 155, 254, 0.1)', fill: true, tension: 0.4 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false } } }
         });
     }
 
@@ -140,31 +130,37 @@
         const listDiv = document.getElementById('historyList');
         listDiv.innerHTML = "";
         history.forEach((item, index) => {
+            const lightColor = item.light === '綠燈' ? '#81b29a' : (item.light === '黃燈' ? '#f2cc8f' : '#e07a5f');
             const div = document.createElement('div');
             div.className = 'history-item';
             div.innerHTML = `
                 <button class="delete-btn" onclick="deleteItem(${index})">✕</button>
-                <b>${item.date}</b> | ${item.weight}kg | ${item.light} | ❤️${item.stars}分<br>
-                <small>🏃 ${item.exercise}</small><br>
-                <small>📝 ${item.note}</small>
+                <b style="color:#888;">${item.date}</b> | <span style="color:${lightColor}; font-weight:bold;">${item.light}</span><br>
+                <span style="font-size:1.2rem; font-weight:bold;">${item.weight} kg</span> 
+                <span style="float:right; color:var(--ai);">😊 ${item.score}/10 分</span><br>
+                <small>🏃 運動：${item.exercise}</small><br>
+                <small style="color:#666;">📝 ${item.note || '無紀錄'}</small>
             `;
             listDiv.appendChild(div);
         });
     }
 
     function deleteItem(index) {
-        let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
-        history.splice(index, 1);
-        localStorage.setItem('dietHistory', JSON.stringify(history));
-        displayHistory();
-        updateChart();
+        if(confirm('確定刪除？')) {
+            let history = JSON.parse(localStorage.getItem('dietHistory')) || [];
+            history.splice(index, 1);
+            localStorage.setItem('dietHistory', JSON.stringify(history));
+            displayHistory(); updateChart();
+        }
     }
 
     function resetForm() {
         document.getElementById('weight').value = '';
         document.getElementById('exercise').value = '';
         document.getElementById('note').value = '';
-        setStars(0);
+        document.getElementById('scoreSlider').value = 5;
+        updateScore(5);
+        document.querySelectorAll('.light-tag').forEach(b => b.classList.remove('active'));
     }
 </script>
 </body>
